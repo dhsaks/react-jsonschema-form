@@ -250,7 +250,7 @@ class App extends Component {
       ArrayFieldTemplate,
       transformErrors,
     } = this.state;
-
+    let doPost = this.doPost.bind(this);
     return (
       <div className="container-fluid">
         <div className="page-header">
@@ -258,16 +258,10 @@ class App extends Component {
           <div className="row">
             <div className="col-sm-2">
               <button
-                className="btn btn-success"
-                onClick={this.doPost.bind(this)}>
+                className="btn btn-success savebtn"
+                onClick={doPost}>
                 Save
               </button>
-              <Form
-                schema={liveValidateSchema}
-                formData={liveValidate}
-                onChange={this.setLiveValidate}>
-                <div />
-              </Form>
             </div>
           </div>
         </div>
@@ -310,8 +304,10 @@ class App extends Component {
                 uiSchema={uiSchema}
                 formData={formData}
                 onChange={this.onFormDataChange}
-                onSubmit={({ formData }) =>
-                  console.log("submitted formData", formData)}
+                onSubmit={({ formData }) => {
+                  console.log("submitted formData", formData);
+                  doPost();
+                }}
                 fields={{ geo: GeoPosition }}
                 validate={validate}
                 onBlur={(id, value) =>
