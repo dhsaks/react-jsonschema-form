@@ -1,14 +1,41 @@
 import React from "react";
 
 function ArrayFieldTemplate(props) {
+  var draggedElement;
   return (
     <div className={props.className}>
       {props.items &&
-        props.items.map(element =>
-          <div key={element.index}>
-            <div>
-              {element.children}
-            </div>
+
+        props.items.map(element => (
+          <div
+            key={element.index}
+            draggable={true}
+            onDragStart={function(e) {
+              draggedElement = e.currentTarget;
+              e.dataTransfer.setData(
+                "text/plain",
+                JSON.stringify({ idx: element.index })
+              );
+            }}
+            onDragOver={function(e) {
+              e.preventDefault();
+
+              // Logic here
+            }}
+            onDrop={function(e) {
+              e.preventDefault();
+              let data = e.dataTransfer.getData("text/plain");
+              let fromIdx = JSON.parse(data).idx;
+              let toIdx = element.index;
+              if (
+                draggedElement &&
+                e.currentTarget.parentNode == draggedElement.parentNode
+              ) {
+                element.reorder(fromIdx, toIdx);
+              }
+            }}>
+            <div>{element.children}</div>
+
             {element.hasMoveDown &&
               <button
                 onClick={element.onReorderClick(
@@ -46,12 +73,26 @@ function ArrayFieldTemplate(props) {
 
 module.exports = {
   schema: {
+    type: "object",
     title: "Custom array of strings",
-    type: "array",
-    items: {
-      type: "string",
+    properties: {
+      listOfStrings: {
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
+      anotherListOfStrings: {
+        type: "array",
+        items: {
+          type: "string",
+        },
+      },
     },
   },
-  formData: ["react", "jsonschema", "form"],
+  formData: {
+    listOfStrings: ["jsonschema", "form", "react"],
+    anotherListOfStrings: ["ok", "ok2"],
+  },
   ArrayFieldTemplate,
 };

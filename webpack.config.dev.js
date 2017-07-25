@@ -2,14 +2,16 @@ var path = require("path");
 var webpack = require("webpack");
 
 module.exports = {
-  devtool: "eval",
-  entry: [
-    "webpack-hot-middleware/client?reload=true",
-    "./playground/app"
-  ],
+  devtool: "source-map",
+  entry: {
+      bundle: [
+      "webpack-hot-middleware/client?reload=true",
+      "./playground/app"
+    ]
+  },
   output: {
     path: path.join(__dirname, "build"),
-    filename: "bundle.js",
+    filename: "[name].js",
     publicPath: "/static/"
   },
   plugins: [
@@ -24,6 +26,7 @@ module.exports = {
         include: [
           path.join(__dirname, "src"),
           path.join(__dirname, "playground"),
+          path.join(__dirname, "multilevel"),
           path.join(__dirname, "node_modules", "codemirror", "mode", "javascript"),
         ]
       },

@@ -4,7 +4,6 @@ import Codemirror from "react-codemirror";
 import "codemirror/mode/javascript/javascript";
 
 import { shouldRender } from "../src/utils";
-import { samples } from "./samples";
 import Form from "../src";
 
 // Import a few CodeMirror themes; these are used to match alternative
@@ -55,94 +54,13 @@ const cmOptions = {
   indentWithTabs: false,
   tabSize: 2,
 };
+/*
 const themes = {
   default: {
-    stylesheet:
-      "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css",
-  },
-  cerulean: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/cerulean/bootstrap.min.css",
-  },
-  cosmo: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/cosmo/bootstrap.min.css",
-  },
-  cyborg: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/cyborg/bootstrap.min.css",
-    editor: "blackboard",
-  },
-  darkly: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/darkly/bootstrap.min.css",
-    editor: "mbo",
-  },
-  flatly: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/flatly/bootstrap.min.css",
-    editor: "ttcn",
-  },
-  journal: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/journal/bootstrap.min.css",
-  },
-  lumen: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/lumen/bootstrap.min.css",
-  },
-  paper: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/paper/bootstrap.min.css",
-  },
-  readable: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/readable/bootstrap.min.css",
-  },
-  sandstone: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/sandstone/bootstrap.min.css",
-    editor: "solarized",
-  },
-  simplex: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/simplex/bootstrap.min.css",
-    editor: "ttcn",
-  },
-  slate: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/slate/bootstrap.min.css",
-    editor: "monokai",
-  },
-  spacelab: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/spacelab/bootstrap.min.css",
-  },
-  "solarized-dark": {
-    stylesheet:
-      "//cdn.rawgit.com/aalpern/bootstrap-solarized/master/bootstrap-solarized-dark.css",
-    editor: "dracula",
-  },
-  "solarized-light": {
-    stylesheet:
-      "//cdn.rawgit.com/aalpern/bootstrap-solarized/master/bootstrap-solarized-light.css",
-    editor: "solarized",
-  },
-  superhero: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/superhero/bootstrap.min.css",
-    editor: "dracula",
-  },
-  united: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/united/bootstrap.min.css",
-  },
-  yeti: {
-    stylesheet:
-      "//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.6/yeti/bootstrap.min.css",
-    editor: "eclipse",
-  },
-};
+    stylesheet: "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css",
+  }
+};*/
+
 
 class GeoPosition extends Component {
   constructor(props) {
@@ -238,45 +156,7 @@ class Editor extends Component {
     );
   }
 }
-
-class Selector extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { current: "Simple" };
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return shouldRender(this, nextProps, nextState);
-  }
-
-  onLabelClick = label => {
-    return event => {
-      event.preventDefault();
-      this.setState({ current: label });
-      setImmediate(() => this.props.onSelected(samples[label]));
-    };
-  };
-
-  render() {
-    return (
-      <ul className="nav nav-pills">
-        {Object.keys(samples).map((label, i) => {
-          return (
-            <li
-              key={i}
-              role="presentation"
-              className={this.state.current === label ? "active" : ""}>
-              <a href="#" onClick={this.onLabelClick(label)}>
-                {label}
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    );
-  }
-}
-
+/*
 function ThemeSelector({ theme, select }) {
   const themeSchema = {
     type: "string",
@@ -292,47 +172,13 @@ function ThemeSelector({ theme, select }) {
   );
 }
 
-class CopyLink extends Component {
-  onCopyClick = event => {
-    this.input.select();
-    document.execCommand("copy");
-  };
-
-  render() {
-    const { shareURL, onShare } = this.props;
-    if (!shareURL) {
-      return (
-        <button className="btn btn-default" type="button" onClick={onShare}>
-          Share
-        </button>
-      );
-    }
-    return (
-      <div className="input-group">
-        <input
-          type="text"
-          ref={input => (this.input = input)}
-          className="form-control"
-          defaultValue={shareURL}
-        />
-        <span className="input-group-btn">
-          <button
-            className="btn btn-default"
-            type="button"
-            onClick={this.onCopyClick}>
-            <i className="glyphicon glyphicon-copy" />
-          </button>
-        </span>
-      </div>
-    );
-  }
-}
+*/
 
 class App extends Component {
   constructor(props) {
     super(props);
     // initialize state with Simple data sample
-    const { schema, uiSchema, formData, validate } = samples.Simple;
+    const { schema, uiSchema, formData, validate } = window["data"];
     this.state = {
       form: false,
       schema,
@@ -346,17 +192,26 @@ class App extends Component {
     };
   }
 
+  doPost() {
+    console.log(this);
+    const {
+      schema,
+      uiSchema,
+      formData,
+    } = this.state;
+    fetch(window["postEndPoint"], {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ schema, uiSchema, formData }),
+    });
+  }
   componentDidMount() {
-    const hash = document.location.hash.match(/#(.*)/);
-    if (hash && typeof hash[1] === "string" && hash[1].length > 0) {
-      try {
-        this.load(JSON.parse(atob(hash[1])));
-      } catch (err) {
-        alert("Unable to load form setup data.");
-      }
-    } else {
-      this.load(samples.Simple);
-    }
+
+    this.load(window["data"]);
+
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -409,91 +264,80 @@ class App extends Component {
       formData,
       liveValidate,
       validate,
-      theme,
       editor,
       ArrayFieldTemplate,
       transformErrors,
     } = this.state;
-
+    let doPost = this.doPost.bind(this);
     return (
       <div className="container-fluid">
         <div className="page-header">
-          <h1>react-jsonschema-form</h1>
+          <h1>Edit</h1>
           <div className="row">
-            <div className="col-sm-8">
-              <Selector onSelected={this.load} />
-            </div>
             <div className="col-sm-2">
+              <button
+                className="btn btn-success savebtn"
+                onClick={doPost}>
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="row data">
+          <div className="col-sm-6">
+            <Editor
+              title="JSONSchema"
+              theme={editor}
+              code={toJson(schema)}
+              onChange={this.onSchemaEdited}
+            />
+          </div>
+          <div className="col-sm-6">
+            <Editor
+              title="UISchema"
+              theme={editor}
+              code={toJson(uiSchema)}
+              onChange={this.onUISchemaEdited}
+            />
+          </div>
+        </div>
+
+        <div className="row data">
+          <div className="col-sm-12">
+            <Editor
+              title="Sample form data"
+              theme={editor}
+              code={toJson(formData)}
+              onChange={this.onFormDataEdited}
+            />
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-sm-5">
+            {this.state.form &&
               <Form
-                schema={liveValidateSchema}
-                formData={liveValidate}
-                onChange={this.setLiveValidate}>
-                <div />
-              </Form>
-            </div>
-            <div className="col-sm-2">
-              <ThemeSelector theme={theme} select={this.onThemeSelected} />
-            </div>
+                ArrayFieldTemplate={ArrayFieldTemplate}
+                liveValidate={liveValidate}
+                schema={schema}
+                uiSchema={uiSchema}
+                formData={formData}
+                onChange={this.onFormDataChange}
+                onSubmit={({ formData }) => {
+                  console.log("submitted formData", formData);
+                  doPost();
+                }}
+                fields={{ geo: GeoPosition }}
+                validate={validate}
+                onBlur={(id, value) =>
+                  console.log(`Touched ${id} with value ${value}`)}
+                transformErrors={transformErrors}
+                onError={log("errors")}
+              />}
           </div>
+
         </div>
-        <div className="col-sm-7">
-          <Editor
-            title="JSONSchema"
-            theme={editor}
-            code={toJson(schema)}
-            onChange={this.onSchemaEdited}
-          />
-          <div className="row">
-            <div className="col-sm-6">
-              <Editor
-                title="UISchema"
-                theme={editor}
-                code={toJson(uiSchema)}
-                onChange={this.onUISchemaEdited}
-              />
-            </div>
-            <div className="col-sm-6">
-              <Editor
-                title="formData"
-                theme={editor}
-                code={toJson(formData)}
-                onChange={this.onFormDataEdited}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="col-sm-5">
-          {this.state.form &&
-            <Form
-              ArrayFieldTemplate={ArrayFieldTemplate}
-              liveValidate={liveValidate}
-              schema={schema}
-              uiSchema={uiSchema}
-              formData={formData}
-              onChange={this.onFormDataChange}
-              onSubmit={({ formData }) =>
-                console.log("submitted formData", formData)}
-              fields={{ geo: GeoPosition }}
-              validate={validate}
-              onBlur={(id, value) =>
-                console.log(`Touched ${id} with value ${value}`)}
-              transformErrors={transformErrors}
-              onError={log("errors")}>
-              <div className="row">
-                <div className="col-sm-3">
-                  <button className="btn btn-primary" type="submit">
-                    Submit
-                  </button>
-                </div>
-                <div className="col-sm-9 text-right">
-                  <CopyLink
-                    shareURL={this.state.shareURL}
-                    onShare={this.onShare}
-                  />
-                </div>
-              </div>
-            </Form>}
-        </div>
+
       </div>
     );
   }

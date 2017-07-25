@@ -6,11 +6,11 @@ module.exports = {
   entry: "./playground/app",
   output: {
     path: path.join(__dirname, "build"),
-    filename: "bundle.js",
+    filename: "react-jsonschema-form.js",
     publicPath: "/static/"
   },
   plugins: [
-    new ExtractTextPlugin("styles.css", {allChunks: true}),
+    new ExtractTextPlugin("react-jsonschema-form.css", {allChunks: true}),
     new webpack.DefinePlugin({
       "process.env": {
         NODE_ENV: JSON.stringify("production")
