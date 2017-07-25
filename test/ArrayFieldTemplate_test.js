@@ -1,10 +1,12 @@
-import React from "react";
+import React, { PureComponent } from "react";
 
 import { expect } from "chai";
 import { createFormComponent, createSandbox } from "./test_utils";
 
 describe("ArrayFieldTemplate", () => {
   let sandbox;
+
+  const formData = ["one", "two", "three"];
 
   beforeEach(() => {
     sandbox = createSandbox();
@@ -17,7 +19,7 @@ describe("ArrayFieldTemplate", () => {
   describe("Custom ArrayFieldTemplate of string array", () => {
     function ArrayFieldTemplate(props) {
       return (
-        <div className="custom-array">
+        <div className={props.uiSchema.classNames}>
           {props.canAdd && <button className="custom-array-add" />}
           {props.items.map(element => {
             return (
@@ -35,7 +37,27 @@ describe("ArrayFieldTemplate", () => {
       );
     }
 
-    const formData = ["one", "two", "three"];
+    describe("Statefull ArrayFieldTemplate", () => {
+      class ArrayFieldTemplate extends PureComponent {
+        render() {
+          return (
+            <div>
+              {this.props.items.map(item => item.element)}
+            </div>
+          );
+        }
+      }
+
+      it("should render a stateful custom component", () => {
+        const { node } = createFormComponent({
+          schema: { type: "array", items: { type: "string" } },
+          formData,
+          ArrayFieldTemplate,
+        });
+
+        expect(node.querySelectorAll(".field-array div")).to.have.length.of(3);
+      });
+    });
 
     describe("not fixed items", () => {
       const schema = {
@@ -45,12 +67,18 @@ describe("ArrayFieldTemplate", () => {
         items: { type: "string" },
       };
 
+      const uiSchema = {
+        classNames: "custom-array",
+      };
+
       let node;
+
       beforeEach(() => {
         node = createFormComponent({
           ArrayFieldTemplate,
           formData,
           schema,
+          uiSchema,
         }).node;
       });
 
@@ -95,12 +123,18 @@ describe("ArrayFieldTemplate", () => {
         items: [{ type: "string" }, { type: "string" }, { type: "string" }],
       };
 
+      const uiSchema = {
+        classNames: "custom-array",
+      };
+
       let node;
+
       beforeEach(() => {
         node = createFormComponent({
           ArrayFieldTemplate,
           formData,
           schema,
+          uiSchema,
         }).node;
       });
 

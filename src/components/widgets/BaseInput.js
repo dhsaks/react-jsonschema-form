@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 
 function BaseInput(props) {
   // Note: since React 15.2.0 we can't forward unknown element attributes, so we
@@ -6,6 +7,7 @@ function BaseInput(props) {
   const {
     value,
     readonly,
+    disabled,
     autofocus,
     onBlur,
     options,
@@ -14,16 +16,19 @@ function BaseInput(props) {
     registry,
     ...inputProps
   } = props;
+
+  inputProps.type = options.inputType || inputProps.type || "text";
   const _onChange = ({ target: { value } }) => {
-    return props.onChange(value === "" ? undefined : value);
+    return props.onChange(value === "" ? options.emptyValue : value);
   };
   return (
     <input
-      {...inputProps}
       className="form-control"
       readOnly={readonly}
+      disabled={disabled}
       autoFocus={autofocus}
       value={value == null ? "" : value}
+      {...inputProps}
       onChange={_onChange}
       onBlur={onBlur && (event => onBlur(inputProps.id, event.target.value))}
     />

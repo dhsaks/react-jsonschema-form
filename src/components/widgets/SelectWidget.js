@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 
 import { asNumber } from "../../utils";
 
@@ -10,7 +11,9 @@ function processValue({ type, items }, value) {
   if (value === "") {
     return undefined;
   } else if (
-    type === "array" && items && ["number", "integer"].includes(items.type)
+    type === "array" &&
+    items &&
+    ["number", "integer"].includes(items.type)
   ) {
     return value.map(asNumber);
   } else if (type === "boolean") {
@@ -56,23 +59,30 @@ function SelectWidget(props) {
       className="form-control"
       value={typeof value === "undefined" ? emptyValue : value}
       required={required}
-      disabled={disabled}
-      readOnly={readonly}
+      disabled={disabled || readonly}
       autoFocus={autofocus}
       onBlur={
         onBlur &&
-          (event => {
-            const newValue = getValue(event, multiple);
-            onBlur(id, processValue(schema, newValue));
-          })
+        (event => {
+          const newValue = getValue(event, multiple);
+          onBlur(id, processValue(schema, newValue));
+        })
       }
       onChange={event => {
         const newValue = getValue(event, multiple);
         onChange(processValue(schema, newValue));
       }}>
-      {!multiple && !schema.default && <option value="">{placeholder}</option>}
+      {!multiple &&
+        !schema.default &&
+        <option value="">
+          {placeholder}
+        </option>}
       {enumOptions.map(({ value, label }, i) => {
-        return <option key={i} value={value}>{label}</option>;
+        return (
+          <option key={i} value={value}>
+            {label}
+          </option>
+        );
       })}
     </select>
   );
@@ -91,6 +101,8 @@ if (process.env.NODE_ENV !== "production") {
     }).isRequired,
     value: PropTypes.any,
     required: PropTypes.bool,
+    disabled: PropTypes.bool,
+    readonly: PropTypes.bool,
     multiple: PropTypes.bool,
     autofocus: PropTypes.bool,
     onChange: PropTypes.func,

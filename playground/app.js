@@ -61,6 +61,7 @@ const themes = {
   }
 };*/
 
+
 class GeoPosition extends Component {
   constructor(props) {
     super(props);
@@ -131,7 +132,6 @@ class Editor extends Component {
       try {
         this.props.onChange(fromJson(this.state.code));
       } catch (err) {
-        console.error(err);
         this.setState({ valid: false, code });
       }
     });
@@ -171,7 +171,9 @@ function ThemeSelector({ theme, select }) {
     </Form>
   );
 }
+
 */
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -186,6 +188,7 @@ class App extends Component {
       editor: "default",
       theme: "default",
       liveValidate: true,
+      shareURL: null,
     };
   }
 
@@ -206,7 +209,9 @@ class App extends Component {
     });
   }
   componentDidMount() {
+
     this.load(window["data"]);
+
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -218,14 +223,15 @@ class App extends Component {
     const { ArrayFieldTemplate } = data;
     // force resetting form component instance
     this.setState({ form: false }, _ =>
-      this.setState({ ...data, form: true, ArrayFieldTemplate }));
+      this.setState({ ...data, form: true, ArrayFieldTemplate })
+    );
   };
 
-  onSchemaEdited = schema => this.setState({ schema });
+  onSchemaEdited = schema => this.setState({ schema, shareURL: null });
 
-  onUISchemaEdited = uiSchema => this.setState({ uiSchema });
+  onUISchemaEdited = uiSchema => this.setState({ uiSchema, shareURL: null });
 
-  onFormDataEdited = formData => this.setState({ formData });
+  onFormDataEdited = formData => this.setState({ formData, shareURL: null });
 
   onThemeSelected = (theme, { stylesheet, editor }) => {
     this.setState({ theme, editor: editor ? editor : "default" });
@@ -237,7 +243,19 @@ class App extends Component {
 
   setLiveValidate = ({ formData }) => this.setState({ liveValidate: formData });
 
-  onFormDataChange = ({ formData }) => this.setState({ formData });
+  onFormDataChange = ({ formData }) =>
+    this.setState({ formData, shareURL: null });
+
+  onShare = () => {
+    const { formData, schema, uiSchema } = this.state;
+    const { location: { origin, pathname } } = document;
+    try {
+      const hash = btoa(JSON.stringify({ formData, schema, uiSchema }));
+      this.setState({ shareURL: `${origin}${pathname}#${hash}` });
+    } catch (err) {
+      this.setState({ shareURL: null });
+    }
+  };
 
   render() {
     const {
@@ -283,6 +301,7 @@ class App extends Component {
             />
           </div>
         </div>
+
         <div className="row data">
           <div className="col-sm-12">
             <Editor
@@ -316,6 +335,7 @@ class App extends Component {
                 onError={log("errors")}
               />}
           </div>
+
         </div>
 
       </div>

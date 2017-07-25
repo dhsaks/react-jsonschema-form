@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 import { default as DefaultErrorList } from "./ErrorList";
 import {
@@ -78,6 +79,7 @@ export default class Form extends Component {
   renderErrors() {
     const { status, errors } = this.state;
     const { ErrorList, showErrorList } = this.props;
+
     if (status !== "editing" && errors.length && showErrorList != false) {
       return <ErrorList errors={errors} />;
     }
@@ -85,8 +87,8 @@ export default class Form extends Component {
   }
 
   onChange = (formData, options = { validate: false }) => {
-    const mustValidate = !this.props.noValidate &&
-      (this.props.liveValidate || options.validate);
+    const mustValidate =
+      !this.props.noValidate && (this.props.liveValidate || options.validate);
     let state = { status: "editing", formData };
     if (mustValidate) {
       const { errors, errorSchema } = this.validate(formData);
@@ -191,7 +193,9 @@ export default class Form extends Component {
         {children
           ? children
           : <p>
-              <button type="submit" className="btn btn-info">Submit</button>
+              <button type="submit" className="btn btn-info">
+                Submit
+              </button>
             </p>}
       </form>
     );

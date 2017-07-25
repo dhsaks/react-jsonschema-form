@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 import { shouldRender, parseDateString, toDateString, pad } from "../../utils";
 
@@ -120,7 +121,7 @@ class AltDateWidget extends Component {
     const { id, disabled, readonly, autofocus, registry, onBlur } = this.props;
     return (
       <ul className="list-inline">
-        {this.dateElementProps.map((elemProps, i) => (
+        {this.dateElementProps.map((elemProps, i) =>
           <li key={i}>
             <DateElement
               rootId={id}
@@ -133,7 +134,7 @@ class AltDateWidget extends Component {
               autofocus={autofocus && i === 0}
             />
           </li>
-        ))}
+        )}
         <li>
           <a href="#" className="btn btn-info btn-now" onClick={this.setNow}>
             Now
@@ -156,7 +157,7 @@ if (process.env.NODE_ENV !== "production") {
   AltDateWidget.propTypes = {
     schema: PropTypes.object.isRequired,
     id: PropTypes.string.isRequired,
-    value: React.PropTypes.string,
+    value: PropTypes.string,
     required: PropTypes.bool,
     disabled: PropTypes.bool,
     readonly: PropTypes.bool,

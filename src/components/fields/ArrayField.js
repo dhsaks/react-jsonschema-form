@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 import {
   getWidget,
@@ -54,7 +55,6 @@ function DefaultArrayItem(props) {
   };
   return (
     <div key={props.index} className={props.className}>
-
       <div className={props.hasToolbar ? "col-xs-9" : "col-xs-12"}>
         {props.children}
       </div>
@@ -64,7 +64,6 @@ function DefaultArrayItem(props) {
           <div
             className="btn-group"
             style={{ display: "flex", justifyContent: "space-around" }}>
-
             {(props.hasMoveUp || props.hasMoveDown) &&
               <IconBtn
                 icon="arrow-up"
@@ -99,7 +98,6 @@ function DefaultArrayItem(props) {
               />}
           </div>
         </div>}
-
     </div>
   );
 }
@@ -107,7 +105,6 @@ function DefaultArrayItem(props) {
 function DefaultFixedArrayFieldTemplate(props) {
   return (
     <fieldset className={props.className}>
-
       <ArrayFieldTitle
         key={`array-field-title-${props.idSchema.$id}`}
         TitleField={props.TitleField}
@@ -141,7 +138,6 @@ function DefaultFixedArrayFieldTemplate(props) {
 function DefaultNormalArrayFieldTemplate(props) {
   return (
     <fieldset className={props.className}>
-
       <ArrayFieldTitle
         key={`array-field-title-${props.idSchema.$id}`}
         TitleField={props.TitleField}
@@ -178,7 +174,6 @@ class ArrayField extends Component {
     uiSchema: {},
     formData: [],
     idSchema: {},
-    registry: getDefaultRegistry(),
     required: false,
     disabled: false,
     readonly: false,
@@ -200,9 +195,24 @@ class ArrayField extends Component {
     return itemSchema.type !== "null";
   }
 
+  canAddItem(formItems) {
+    const { schema, uiSchema } = this.props;
+    let { addable } = getUiOptions(uiSchema);
+    if (addable !== false) {
+      // if ui:options.addable was not explicitly set to false, we can add
+      // another item if we have not exceeded maxItems yet
+      if (schema.maxItems !== undefined) {
+        addable = formItems.length < schema.maxItems;
+      } else {
+        addable = true;
+      }
+    }
+    return addable;
+  }
+
   onAddClick = event => {
     event.preventDefault();
-    const { schema, registry, formData } = this.props;
+    const { schema, formData, registry = getDefaultRegistry() } = this.props;
     const { definitions } = registry;
     let itemSchema = schema.items;
     if (isFixedItems(schema) && allowAdditionalItems(schema)) {
@@ -265,14 +275,15 @@ class ArrayField extends Component {
   };
 
   render() {
-    const { schema, uiSchema } = this.props;
-    if (isFilesArray(schema, uiSchema)) {
-      return this.renderFiles();
-    }
+    const { schema, uiSchema, registry = getDefaultRegistry() } = this.props;
+    const { definitions } = registry;
     if (isFixedItems(schema)) {
       return this.renderFixedArray();
     }
-    if (isMultiSelect(schema)) {
+    if (isFilesArray(schema, uiSchema, definitions)) {
+      return this.renderFiles();
+    }
+    if (isMultiSelect(schema, definitions)) {
       return this.renderMultiSelect();
     }
     return this.renderNormalArray();
@@ -290,7 +301,7 @@ class ArrayField extends Component {
       disabled,
       readonly,
       autofocus,
-      registry,
+      registry = getDefaultRegistry(),
       formContext,
       onBlur,
     } = this.props;
@@ -298,10 +309,8 @@ class ArrayField extends Component {
     const { ArrayFieldTemplate, definitions, fields } = registry;
     const { TitleField, DescriptionField } = fields;
     const itemsSchema = retrieveSchema(schema.items, definitions);
-    const { addable = true } = getUiOptions(uiSchema);
-
     const arrayProps = {
-      canAdd: addable,
+      canAdd: this.canAddItem(formData),
       items: formData.map((item, index) => {
         const itemErrorSchema = errorSchema ? errorSchema[index] : undefined;
         const itemIdPrefix = idSchema.$id + "_" + index;
@@ -323,6 +332,7 @@ class ArrayField extends Component {
       DescriptionField,
       disabled,
       idSchema,
+      uiSchema,
       onAddClick: this.onAddClick,
       readonly,
       required,
@@ -333,9 +343,8 @@ class ArrayField extends Component {
     };
 
     // Check if a custom render function was passed in
-    const renderFunction = ArrayFieldTemplate ||
-      DefaultNormalArrayFieldTemplate;
-    return renderFunction(arrayProps);
+    const Component = ArrayFieldTemplate || DefaultNormalArrayFieldTemplate;
+    return <Component {...arrayProps} />;
   }
 
   renderMultiSelect() {
@@ -347,9 +356,10 @@ class ArrayField extends Component {
       readonly,
       autofocus,
       onBlur,
+      registry = getDefaultRegistry(),
     } = this.props;
     const items = this.props.formData;
-    const { widgets, definitions, formContext } = this.props.registry;
+    const { widgets, definitions, formContext } = registry;
     const itemsSchema = retrieveSchema(schema.items, definitions);
     const enumOptions = optionsList(itemsSchema);
     const { widget = "select", ...options } = {
@@ -384,10 +394,11 @@ class ArrayField extends Component {
       readonly,
       autofocus,
       onBlur,
+      registry = getDefaultRegistry(),
     } = this.props;
     const title = schema.title || name;
     const items = this.props.formData;
-    const { widgets, formContext } = this.props.registry;
+    const { widgets, formContext } = registry;
     const { widget = "files", ...options } = getUiOptions(uiSchema);
     const Widget = getWidget(schema, widget, widgets);
     return (
@@ -419,7 +430,7 @@ class ArrayField extends Component {
       disabled,
       readonly,
       autofocus,
-      registry,
+      registry = getDefaultRegistry(),
       onBlur,
     } = this.props;
     const title = schema.title || name;
@@ -427,12 +438,11 @@ class ArrayField extends Component {
     const { ArrayFieldTemplate, definitions, fields } = registry;
     const { TitleField } = fields;
     const itemSchemas = schema.items.map(item =>
-      retrieveSchema(item, definitions));
+      retrieveSchema(item, definitions)
+    );
     const additionalSchema = allowAdditionalItems(schema)
       ? retrieveSchema(schema.additionalItems, definitions)
       : null;
-    const { addable = true } = getUiOptions(uiSchema);
-    const canAdd = addable && additionalSchema;
 
     if (!items || items.length < itemSchemas.length) {
       // to make sure at least all fixed items are generated
@@ -442,7 +452,7 @@ class ArrayField extends Component {
 
     // These are the props passed into the render function
     const arrayProps = {
-      canAdd,
+      canAdd: this.canAddItem(items) && additionalSchema,
       className: "field field-array field-array-fixed-items",
       disabled,
       idSchema,
@@ -454,8 +464,8 @@ class ArrayField extends Component {
         const itemUiSchema = additional
           ? uiSchema.additionalItems || {}
           : Array.isArray(uiSchema.items)
-              ? uiSchema.items[index]
-              : uiSchema.items || {};
+            ? uiSchema.items[index]
+            : uiSchema.items || {};
         const itemErrorSchema = errorSchema ? errorSchema[index] : undefined;
 
         return this.renderArrayFieldItem({
@@ -476,13 +486,14 @@ class ArrayField extends Component {
       readonly,
       required,
       schema,
+      uiSchema,
       title,
       TitleField,
     };
 
     // Check if a custom template template was passed in
-    const renderFunction = ArrayFieldTemplate || DefaultFixedArrayFieldTemplate;
-    return renderFunction(arrayProps);
+    const Template = ArrayFieldTemplate || DefaultFixedArrayFieldTemplate;
+    return <Template {...arrayProps} />;
   }
 
   renderArrayFieldItem(props) {
@@ -499,8 +510,13 @@ class ArrayField extends Component {
       autofocus,
       onBlur,
     } = props;
-    const { SchemaField } = this.props.registry.fields;
-    const { disabled, readonly, uiSchema } = this.props;
+    const {
+      disabled,
+      readonly,
+      uiSchema,
+      registry = getDefaultRegistry(),
+    } = this.props;
+    const { fields: { SchemaField } } = registry;
     const { orderable, removable } = {
       orderable: true,
       removable: true,

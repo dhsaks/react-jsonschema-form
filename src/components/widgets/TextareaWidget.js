@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 
 function TextareaWidget(props) {
   const {
@@ -14,7 +15,7 @@ function TextareaWidget(props) {
     onBlur,
   } = props;
   const _onChange = ({ target: { value } }) => {
-    return onChange(value === "" ? undefined : value);
+    return onChange(value === "" ? options.emptyValue : value);
   };
   return (
     <textarea
@@ -48,6 +49,8 @@ if (process.env.NODE_ENV !== "production") {
     }),
     value: PropTypes.string,
     required: PropTypes.bool,
+    disabled: PropTypes.bool,
+    readonly: PropTypes.bool,
     autofocus: PropTypes.bool,
     onChange: PropTypes.func,
     onBlur: PropTypes.func,

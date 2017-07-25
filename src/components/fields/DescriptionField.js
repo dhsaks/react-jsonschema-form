@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 
 function DescriptionField(props) {
   const { id, description } = props;
@@ -7,9 +8,17 @@ function DescriptionField(props) {
     return <div />;
   }
   if (typeof description === "string") {
-    return <p id={id} className="field-description">{description}</p>;
+    return (
+      <p id={id} className="field-description">
+        {description}
+      </p>
+    );
   } else {
-    return <div id={id} className="field-description">{description}</div>;
+    return (
+      <div id={id} className="field-description">
+        {description}
+      </div>
+    );
   }
 }
 

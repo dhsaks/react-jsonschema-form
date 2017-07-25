@@ -4,8 +4,8 @@ function ArrayFieldTemplate(props) {
   var draggedElement;
   return (
     <div className={props.className}>
-
       {props.items &&
+
         props.items.map(element => (
           <div
             key={element.index}
@@ -35,6 +35,7 @@ function ArrayFieldTemplate(props) {
               }
             }}>
             <div>{element.children}</div>
+
             {element.hasMoveDown &&
               <button
                 onClick={element.onReorderClick(
@@ -56,15 +57,16 @@ function ArrayFieldTemplate(props) {
             </button>
             <hr />
           </div>
-        ))}
+        )}
 
       {props.canAdd &&
         <div className="row">
           <p className="col-xs-3 col-xs-offset-9 array-item-add text-right">
-            <button onClick={props.onAddClick} type="button">Custom +</button>
+            <button onClick={props.onAddClick} type="button">
+              Custom +
+            </button>
           </p>
         </div>}
-
     </div>
   );
 }

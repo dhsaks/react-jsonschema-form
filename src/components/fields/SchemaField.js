@@ -1,9 +1,11 @@
-import React, { PropTypes } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 
 import {
   isMultiSelect,
   retrieveSchema,
   getDefaultRegistry,
+  getUiOptions,
   isFilesArray,
   deepEquals,
 } from "../../utils";
@@ -51,9 +53,17 @@ function Help(props) {
     return <div />;
   }
   if (typeof help === "string") {
-    return <p className="help-block">{help}</p>;
+    return (
+      <p className="help-block">
+        {help}
+      </p>
+    );
   }
-  return <div className="help-block">{help}</div>;
+  return (
+    <div className="help-block">
+      {help}
+    </div>
+  );
 }
 
 function ErrorList(props) {
@@ -66,7 +76,11 @@ function ErrorList(props) {
       <p />
       <ul className="error-detail bs-callout bs-callout-info">
         {errors.map((error, index) => {
-          return <li className="text-danger" key={index}>{error}</li>;
+          return (
+            <li className="text-danger" key={index}>
+              {error}
+            </li>
+          );
         })}
       </ul>
     </div>
@@ -130,7 +144,14 @@ DefaultTemplate.defaultProps = {
 };
 
 function SchemaFieldRender(props) {
-  const { uiSchema, errorSchema, idSchema, name, required, registry } = props;
+  const {
+    uiSchema,
+    errorSchema,
+    idSchema,
+    name,
+    required,
+    registry = getDefaultRegistry(),
+  } = props;
   const {
     definitions,
     fields,
@@ -149,9 +170,12 @@ function SchemaFieldRender(props) {
     return <div />;
   }
 
-  let displayLabel = true;
+  const uiOptions = getUiOptions(uiSchema);
+  let { label: displayLabel = true } = uiOptions;
   if (schema.type === "array") {
-    displayLabel = isMultiSelect(schema) || isFilesArray(schema, uiSchema);
+    displayLabel =
+      isMultiSelect(schema, definitions) ||
+      isFilesArray(schema, uiSchema, definitions);
   }
   if (schema.type === "object") {
     displayLabel = false;
@@ -181,8 +205,12 @@ function SchemaFieldRender(props) {
 
   const { type } = schema;
   const id = idSchema.$id;
-  const label = props.schema.title || schema.title || name;
-  const description = props.schema.description || schema.description;
+  const label =
+    uiSchema["ui:title"] || props.schema.title || schema.title || name;
+  const description =
+    uiSchema["ui:description"] ||
+    props.schema.description ||
+    schema.description;
   const errors = __errors;
   const help = uiSchema["ui:help"];
   const hidden = uiSchema["ui:widget"] === "hidden";
@@ -222,7 +250,11 @@ function SchemaFieldRender(props) {
     uiSchema,
   };
 
-  return <FieldTemplate {...fieldProps}>{field}</FieldTemplate>;
+  return (
+    <FieldTemplate {...fieldProps}>
+      {field}
+    </FieldTemplate>
+  );
 }
 
 class SchemaField extends React.Component {
@@ -244,7 +276,6 @@ SchemaField.defaultProps = {
   uiSchema: {},
   errorSchema: {},
   idSchema: {},
-  registry: getDefaultRegistry(),
   disabled: false,
   readonly: false,
   autofocus: false,

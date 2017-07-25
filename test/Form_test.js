@@ -82,7 +82,10 @@ describe("Form", () => {
       } = props;
       return (
         <div className={"my-template " + classNames}>
-          <label htmlFor={id}>{label}{required ? "*" : null}</label>
+          <label htmlFor={id}>
+            {label}
+            {required ? "*" : null}
+          </label>
           {description}
           {children}
           {errors}
@@ -95,9 +98,11 @@ describe("Form", () => {
           </span>
           {rawErrors
             ? <ul>
-                {rawErrors.map((error, i) => (
-                  <li key={i} className="raw-error">{error}</li>
-                ))}
+                {rawErrors.map((error, i) =>
+                  <li key={i} className="raw-error">
+                    {error}
+                  </li>
+                )}
               </ul>
             : null}
         </div>
@@ -221,6 +226,27 @@ describe("Form", () => {
               bar: { $ref: "#/definitions/testdef" },
             },
           },
+        },
+      };
+
+      const { node } = createFormComponent({ schema });
+
+      expect(node.querySelectorAll("input[type=text]")).to.have.length.of(1);
+    });
+
+    it("should handle references to deep schema definitions", () => {
+      const schema = {
+        definitions: {
+          testdef: {
+            type: "object",
+            properties: {
+              bar: { type: "string" },
+            },
+          },
+        },
+        type: "object",
+        properties: {
+          foo: { $ref: "#/definitions/testdef/properties/bar" },
         },
       };
 
@@ -462,21 +488,18 @@ describe("Form", () => {
       Simulate.submit(node);
 
       // For some reason this may take some time to render, hence the safe wait.
-      setTimeout(
-        () => {
-          expect(comp.state.formData).eql({
-            object: {
-              array: [
-                {
-                  bool: true,
-                },
-              ],
-            },
-          });
-          done();
-        },
-        250
-      );
+      setTimeout(() => {
+        expect(comp.state.formData).eql({
+          object: {
+            array: [
+              {
+                bool: true,
+              },
+            ],
+          },
+        });
+        done();
+      }, 250);
     });
   });
 
@@ -845,8 +868,10 @@ describe("Form", () => {
         sinon.assert.calledWithMatch(
           onError,
           sinon.match(value => {
-            return value.length === 1 &&
-              value[0].message === "does not meet minimum length of 8";
+            return (
+              value.length === 1 &&
+              value[0].message === "does not meet minimum length of 8"
+            );
           })
         );
       });
@@ -886,7 +911,7 @@ describe("Form", () => {
         schema: {
           type: "string",
           minLength: 8,
-          pattern: "\d+",
+          pattern: "d+",
         },
         formData: "short",
       };
@@ -896,7 +921,7 @@ describe("Form", () => {
         expect(comp.state.errorSchema).eql({
           __errors: [
             "does not meet minimum length of 8",
-            'does not match pattern "\d+"',
+            'does not match pattern "d+"',
           ],
         });
       });
@@ -909,7 +934,7 @@ describe("Form", () => {
 
         expect(errors).eql([
           "does not meet minimum length of 8",
-          'does not match pattern "\d+"',
+          'does not match pattern "d+"',
         ]);
       });
     });

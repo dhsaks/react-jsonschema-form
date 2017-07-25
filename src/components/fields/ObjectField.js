@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 import {
   orderProperties,
@@ -12,7 +13,6 @@ class ObjectField extends Component {
     formData: {},
     errorSchema: {},
     idSchema: {},
-    registry: getDefaultRegistry(),
     required: false,
     disabled: false,
     readonly: false,
@@ -20,8 +20,9 @@ class ObjectField extends Component {
 
   isRequired(name) {
     const schema = this.props.schema;
-    return Array.isArray(schema.required) &&
-      schema.required.indexOf(name) !== -1;
+    return (
+      Array.isArray(schema.required) && schema.required.indexOf(name) !== -1
+    );
   }
 
   onPropertyChange = name => {
@@ -42,8 +43,9 @@ class ObjectField extends Component {
       disabled,
       readonly,
       onBlur,
+      registry = getDefaultRegistry(),
     } = this.props;
-    const { definitions, fields, formContext } = this.props.registry;
+    const { definitions, fields, formContext } = registry;
     const { SchemaField, TitleField, DescriptionField } = fields;
     const schema = retrieveSchema(this.props.schema, definitions);
     const title = schema.title === undefined ? name : schema.title;
@@ -58,23 +60,25 @@ class ObjectField extends Component {
             Invalid {name || "root"} object field configuration:
             <em>{err.message}</em>.
           </p>
-          <pre>{JSON.stringify(schema)}</pre>
+          <pre>
+            {JSON.stringify(schema)}
+          </pre>
         </div>
       );
     }
     return (
       <fieldset>
-        {title &&
+        {(uiSchema["ui:title"] || title) &&
           <TitleField
             id={`${idSchema.$id}__title`}
-            title={title}
+            title={title || uiSchema["ui:title"]}
             required={required}
             formContext={formContext}
           />}
-        {schema.description &&
+        {(uiSchema["ui:description"] || schema.description) &&
           <DescriptionField
             id={`${idSchema.$id}__description`}
-            description={schema.description}
+            description={uiSchema["ui:description"] || schema.description}
             formContext={formContext}
           />}
         {orderedProperties.map((name, index) => {
@@ -90,7 +94,7 @@ class ObjectField extends Component {
               formData={formData[name]}
               onChange={this.onPropertyChange(name)}
               onBlur={onBlur}
-              registry={this.props.registry}
+              registry={registry}
               disabled={disabled}
               readonly={readonly}
             />
