@@ -194,18 +194,19 @@ class App extends Component {
 
   doPost() {
     console.log(this);
+    let name = document.getElementById('schemaName').value;
     const {
       schema,
       uiSchema,
       formData,
     } = this.state;
-    fetch(window["postEndPoint"], {
+    fetch(window["postEndPoint"] + '/' + name, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ schema, uiSchema, formData }),
+      body: JSON.stringify({ name, schema, uiSchema, formData }),
     });
   }
   componentDidMount() {
@@ -272,7 +273,6 @@ class App extends Component {
     return (
       <div className="container-fluid">
         <div className="page-header">
-          <h1>Edit</h1>
           <div className="row">
             <div className="col-sm-2">
               <button
@@ -280,6 +280,7 @@ class App extends Component {
                 onClick={doPost}>
                 Save
               </button>
+              
             </div>
           </div>
         </div>
