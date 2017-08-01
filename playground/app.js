@@ -195,6 +195,8 @@ class App extends Component {
   doPost() {
     console.log(this);
     let name = document.getElementById('name').value;
+    let startTimeInput = document.getElementById('startTime');
+    let endTimeInput = document.getElementById('endTime');
     const {
       schema,
       uiSchema,
@@ -206,7 +208,7 @@ class App extends Component {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, schema, uiSchema, formData }),
+      body: JSON.stringify({ name, startTime: (startTimeInput || {}).value, endTime: (endTimeInput || {}).value, schema, uiSchema, formData }),
     });
   }
   componentDidMount() {
