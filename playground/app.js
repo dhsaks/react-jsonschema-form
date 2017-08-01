@@ -194,7 +194,7 @@ class App extends Component {
 
   doPost() {
     console.log(this);
-    let name = document.getElementById('schemaName').value;
+    let name = document.getElementById('name').value;
     const {
       schema,
       uiSchema,
