@@ -3,6 +3,7 @@ var webpack = require("webpack");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
+  devtool: "source-map",
   entry: "./playground/app",
   output: {
     path: path.join(__dirname, "build"),

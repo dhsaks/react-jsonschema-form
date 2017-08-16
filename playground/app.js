@@ -25,7 +25,7 @@ Codemirror.prototype.componentWillReceiveProps = function(nextProps) {
     nextProps.value !== undefined &&
     this.codeMirror.getValue() != nextProps.value
   ) {
-    this.codeMirror.setValue(nextProps.value);
+    //this.codeMirror.setValue(nextProps.value);
   }
   if (typeof nextProps.options === "object") {
     for (var optionName in nextProps.options) {
@@ -37,7 +37,7 @@ Codemirror.prototype.componentWillReceiveProps = function(nextProps) {
 };
 
 const log = type => console.log.bind(console, type);
-const fromJson = json => JSON.parse(json);
+const fromJson = json => typeof(json) === "string" ? JSON.parse(json) : json;
 const toJson = val => JSON.stringify(val, null, 2);
 const liveValidateSchema = { type: "boolean", title: "Live validation" };
 const cmOptions = {
@@ -54,63 +54,6 @@ const cmOptions = {
   indentWithTabs: false,
   tabSize: 2,
 };
-/*
-const themes = {
-  default: {
-    stylesheet: "//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css",
-  }
-};*/
-
-
-class GeoPosition extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { ...props.formData };
-  }
-
-  onChange(name) {
-    return event => {
-      this.setState({ [name]: parseFloat(event.target.value) });
-      setImmediate(() => this.props.onChange(this.state));
-    };
-  }
-
-  render() {
-    const { lat, lon } = this.state;
-    return (
-      <div className="geo">
-        <h3>Hey, I'm a custom component</h3>
-        <p>
-          I'm registered as <code>geo</code> and referenced in
-          <code>uiSchema</code> as the <code>ui:field</code> to use for this
-          schema.
-        </p>
-        <div className="row">
-          <div className="col-sm-6">
-            <label>Latitude</label>
-            <input
-              className="form-control"
-              type="number"
-              value={lat}
-              step="0.00001"
-              onChange={this.onChange("lat")}
-            />
-          </div>
-          <div className="col-sm-6">
-            <label>Longitude</label>
-            <input
-              className="form-control"
-              type="number"
-              value={lon}
-              step="0.00001"
-              onChange={this.onChange("lon")}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
 
 class Editor extends Component {
   constructor(props) {
@@ -156,23 +99,6 @@ class Editor extends Component {
     );
   }
 }
-/*
-function ThemeSelector({ theme, select }) {
-  const themeSchema = {
-    type: "string",
-    enum: Object.keys(themes),
-  };
-  return (
-    <Form
-      schema={themeSchema}
-      formData={theme}
-      onChange={({ formData }) => select(formData, themes[formData])}>
-      <div />
-    </Form>
-  );
-}
-
-*/
 
 class App extends Component {
   constructor(props) {
@@ -181,9 +107,9 @@ class App extends Component {
     const { schema, uiSchema, formData, validate } = window["data"];
     this.state = {
       form: false,
-      schema,
-      uiSchema,
-      formData,
+      schema: schema ? toJson(schema) : "{}",
+      uiSchema: uiSchema ? toJson(uiSchema) : "{}",
+      formData: formData ? toJson(formData) : "{}",
       validate,
       editor: "default",
       theme: "default",
@@ -202,6 +128,7 @@ class App extends Component {
     } = this.state;
     fetch(window["postEndPoint"] + '/' + name, {
       method: "POST",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -216,7 +143,8 @@ class App extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return shouldRender(this, nextProps, nextState);
+    return true;
+    //return shouldRender(this, nextProps, nextState);
   }
 
   load = data => {
@@ -289,7 +217,7 @@ class App extends Component {
             <Editor
               title="JSONSchema"
               theme={editor}
-              code={toJson(schema)}
+              code={schema}
               onChange={this.onSchemaEdited}
             />
           </div>
@@ -297,38 +225,35 @@ class App extends Component {
             <Editor
               title="UISchema"
               theme={editor}
-              code={toJson(uiSchema)}
+              code={uiSchema}
               onChange={this.onUISchemaEdited}
             />
           </div>
         </div>
 
         <div className="row data">
-          <div className="col-sm-12">
+          <div className="col-sm-6">
             <Editor
               title="Sample form data"
               theme={editor}
-              code={toJson(formData)}
+              code={formData}
               onChange={this.onFormDataEdited}
             />
           </div>
-        </div>
-
-        <div className="row">
-          <div className="col-sm-5">
+          <div className="col-sm-6">
             {this.state.form &&
               <Form
                 ArrayFieldTemplate={ArrayFieldTemplate}
                 liveValidate={liveValidate}
-                schema={schema}
-                uiSchema={uiSchema}
-                formData={formData}
+                schema={fromJson(schema)}
+                uiSchema={fromJson(uiSchema)}
+                formData={fromJson(formData)}
                 onChange={this.onFormDataChange}
                 onSubmit={({ formData }) => {
                   console.log("submitted formData", formData);
                   doPost();
                 }}
-                fields={{ geo: GeoPosition }}
+                fields={{}}
                 validate={validate}
                 onBlur={(id, value) =>
                   console.log(`Touched ${id} with value ${value}`)}
@@ -336,7 +261,6 @@ class App extends Component {
                 onError={log("errors")}
               />}
           </div>
-
         </div>
 
       </div>
