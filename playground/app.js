@@ -134,6 +134,19 @@ class App extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name, schema, uiSchema, formData }),
+    }).then ((response) => {
+      if (response.status == 200) {
+        let evt = new Event("ObjectSaved");
+        document.dispatchEvent(evt);
+      }
+      else {
+        let evt = new Event("ObjectSavedError");
+        document.dispatchEvent(evt);
+      }
+    })
+    .catch((err) => {
+      let evt = new Event("ObjectSavedError");
+      document.dispatchEvent(evt);
     });
   }
   componentDidMount() {
@@ -213,7 +226,7 @@ class App extends Component {
           </div>
         </div>
         <div className="row data">
-          <div className="col-sm-6">
+          <div className="col-md-4">
             <Editor
               title="JSONSchema"
               theme={editor}
@@ -221,7 +234,7 @@ class App extends Component {
               onChange={this.onSchemaEdited}
             />
           </div>
-          <div className="col-sm-6">
+          <div className="col-md-4">
             <Editor
               title="UISchema"
               theme={editor}
@@ -229,10 +242,7 @@ class App extends Component {
               onChange={this.onUISchemaEdited}
             />
           </div>
-        </div>
-
-        <div className="row data">
-          <div className="col-sm-6">
+          <div className="col-md-4">
             <Editor
               title="Sample form data"
               theme={editor}
@@ -240,7 +250,11 @@ class App extends Component {
               onChange={this.onFormDataEdited}
             />
           </div>
-          <div className="col-sm-6">
+        </div>
+
+        <div className="row">
+          
+          <div className="col-md-12">
             {this.state.form &&
               <Form
                 ArrayFieldTemplate={ArrayFieldTemplate}
